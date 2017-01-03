@@ -2,7 +2,8 @@
 import re
 import zipfile
 
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Boolean
 
 try:
     import imbox
@@ -11,6 +12,16 @@ except ImportError:
 
 
 class MailAttachCollectorBot(CollectorBot):
+
+    NAME = 'Generic Mail Attachment Fetcher'
+    DESCRIPTION = 'Monitor IMAP mailboxes and retrieve mail attachments'
+    PARAMETERS = ParameterDefinitions('mail feed collector', [
+        Param('folder', 'The folder in which to search for messages', True, String),
+        Param('subject_regex', 'The regular expression to search for in the subject', True, String),
+        Param('from_address', 'The sender\'s e-mail address', False, String),
+        Param('attach_regex', 'The regular expression of the attachment name', True, String),
+        Param('attach_unzip', 'Whether to unzip the attachment', True, Boolean)
+    ])
 
     def init(self):
         if imbox is None:

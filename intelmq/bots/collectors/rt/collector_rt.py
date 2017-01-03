@@ -5,7 +5,8 @@ import zipfile
 
 import requests
 
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Boolean
 
 try:
     import rt
@@ -14,6 +15,37 @@ except ImportError:
 
 
 class RTCollectorBot(CollectorBot):
+    NAME = 'Request Tracker'
+    DESCRIPTION = """Request Tracker Collector fetches attachments from
+    an RTIR instance and optionally decrypts them with gnupg."""
+    PARAMETERS = ParameterDefinitions('http feed collector', [
+        Param('uri',
+              'URL to the RT REST API (e.g. http://localhost/rt/REST/1.0)',
+              True, String),
+        Param('user', 'RT username ', True, String),
+        Param('password', 'RT password', True, String),
+        Param('search_owner', 'Owner of the ticket to search for', True, String,
+              default='nobody'),
+        Param('search_queue', 'Queue of the ticket to search for', True, String,
+              default='Incident Reports'),
+        Param('search_status', 'Status of the ticket to search for', True,
+              String, default='new'),
+        Param('search_subject_like',
+              'Part of the subject of the ticket to search for', True, String,
+              default='Report'),
+        Param('set_status', 'Status to set the ticket to after processing',
+              True, String, default='open'),
+        Param('take_ticket', 'Whether to take the ticket', True, Boolean,
+              default=True),
+        Param('url_regex',
+              'Regular expression of an URL to search for in the ticket', True,
+              String),
+        Param('attachment_regex',
+              'Regular expression of an attachment in the ticket', True,
+              String),
+        Param('unzip_attachment', 'Whether to unzip a found attachment', True,
+              String, default=True)
+    ])
 
     def init(self):
         if rt is None:
@@ -88,7 +120,8 @@ class RTCollectorBot(CollectorBot):
                 try:
                     RT.take(ticket_id)
                 except rt.BadRequest:
-                    self.logger.exception("Could not take ticket %s." % ticket_id)
+                    self.logger.exception(
+                        "Could not take ticket %s." % ticket_id)
             if self.parameters.set_status:
                 RT.edit_ticket(ticket_id, status=self.parameters.set_status)
 

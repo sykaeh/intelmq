@@ -1,12 +1,16 @@
 # -*- coding: utf-8 -*-
 import socket
-import sys
 
 import intelmq.lib.harmonization
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, ParameterDefinitions
 
 
 class GethostbynameExpertBot(Bot):
+
+    NAME = 'Gethostbyname'
+    DESCRIPTION = """Gethostbyname is the bot responsible to parsing the ip
+    from the fqdn. """
+    PARAMETERS = ParameterDefinitions('', [])
 
     def process(self):
         event = self.receive_message()

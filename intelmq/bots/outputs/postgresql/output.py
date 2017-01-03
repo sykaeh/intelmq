@@ -9,7 +9,8 @@ and thus temporary. We don't want to catch too much, like programming errors
 (missing fields etc).
 """
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Boolean, Integer
 
 try:
     import psycopg2
@@ -18,6 +19,22 @@ except ImportError:
 
 
 class PostgreSQLOutputBot(Bot):
+
+    NAME = 'PostgreSQL'
+    DESCRIPTION = """PostgreSQL is the bot responsible to send events to a
+    PostgreSQL Database. When activating autocommit, transactions are not used:
+    http://initd.org/psycopg/docs/connection.html#connection.autocommit """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('autocommit', '', False, Boolean, default=True),
+        Param('database', 'Database name', True, String, default=True),
+        Param('host', 'Host', True, String, default='localhost'),
+        Param('port', 'Port', True, Integer, default=5432),
+        Param('password', '', True, String),
+        Param('sslmode', '', True, String, default='require'),
+        Param('table', '', True, String, default='events'),
+        Param('user', '', True, String),
+        Param('connect_timeout', '', False, Integer, default=5)
+    ])
 
     def init(self):
         self.logger.debug("Connecting to PostgreSQL.")

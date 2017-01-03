@@ -4,7 +4,8 @@ import re
 
 import requests
 
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String
 
 try:
     import imbox
@@ -13,6 +14,15 @@ except ImportError:
 
 
 class MailURLCollectorBot(CollectorBot):
+
+    NAME = 'Generic Mail URL Fetcher'
+    DESCRIPTION = 'Monitor IMAP mailboxes and fetch files from URLs contained in mail bodies'
+    PARAMETERS = ParameterDefinitions('mail feed collector http', [
+        Param('folder', 'The folder in which to search for messages', True, String),
+        Param('subject_regex', 'The regular expression to search for in the subject', True, String),
+        Param('from_address', 'The sender\'s e-mail address', False, String),
+        Param('url_regex', 'The regular expression for the URL', True, String)
+    ])
 
     def init(self):
         if imbox is None:

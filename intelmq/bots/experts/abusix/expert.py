@@ -1,11 +1,12 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Reference: https://abusix.com/contactdb.html
 RIPE abuse contacts resolving through DNS TXT queries
-'''
+"""
 
 from intelmq.bots.experts.abusix.lib import Abusix
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, ParameterDefinitions, Param
+from intelmq.lib.harmonization import String, Integer
 
 try:
     import querycontacts
@@ -14,6 +15,11 @@ except ImportError:
 
 
 class AbusixExpertBot(Bot):
+
+    NAME = 'Abusix'
+    DESCRIPTION = """Abusix is the bot responsible to get the correspondent
+    abuse contact from source IP and destination IP of the events. """
+    PARAMETERS = ParameterDefinitions('redis', [])
 
     def init(self):
         if querycontacts:

@@ -3,7 +3,8 @@
 Generic DB Lookup
 """
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Boolean, Integer, JSON
 
 try:
     import psycopg2
@@ -12,7 +13,27 @@ except ImportError:
     psycopg2 = None
 
 
+
+
 class GenericDBLookupExpertBot(Bot):
+
+    NAME = 'Generic DB Lookup'
+    DESCRIPTION = """This bot is capable for enriching intelmq events by
+    lookups to a database. Currently only postgres is supported. If more than
+    one result is returned, an error is raised."""
+    PARAMETERS = ParameterDefinitions('', [
+        Param('database', '', True, String, default='intelmq'),
+        Param('host', '', True, String, default='localhost'),
+        Param('port', '', True, Integer, default=5432),
+        Param('user', '', True, Boolean, default='intelmq'),
+        Param('password', '', True, String),
+        Param('table', '', True, String, default='contacts'),
+        Param('sslmode', '', True, String, default='require'),
+        Param('connect_timeout', '', False, Integer, default=5),
+        Param('overwrite', '', True, Boolean, default=False),
+        Param('match_fields', 'Key-value mapping an arbitrary number intelmq field names to table column names. The values are compared with `=` only.', True, JSON, default='{"source.asn": "asn"}'),
+        Param('replace_fields', 'Key-value mapping an arbitrary number of table column names to intelmq field names', True, JSON, default='{"contact": "source.abuse_contact"}')
+    ])
 
     def init(self):
         self.logger.debug("Connecting to database.")

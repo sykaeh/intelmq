@@ -1,15 +1,30 @@
 # -*- coding: utf-8 -*-
 
-import pycurl
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String
+
+try:
+    import pycurl
+except:
+    pycurl = None
 
 
 class BitsightCollectorBot(CollectorBot):
 
+    NAME = 'BitSight Ciberfeed Stream'
+    DESCRIPTION = """Bitsight Collector is the bot responsible to get
+    Bitsight Ciberfeed Alert Stream."""
+    PARAMETERS = ParameterDefinitions('http feed collector', [
+        Param('http_url',
+              'URL of the feed (e.g. http://alerts.bitsighttech.com:8080/stream?key=<api>)',
+              True, String)
+    ])
+
     def init(self):
         if hasattr(self.parameters, 'http_ssl_proxy'):
-            self.logger.warning("Parameter 'http_ssl_proxy' is deprecated and will be removed in "
-                                "version 1.0!")
+            self.logger.warning(
+                "Parameter 'http_ssl_proxy' is deprecated and will be removed in "
+                "version 1.0!")
             if not self.parameters.https_proxy:
                 self.parameters.https_proxy = self.parameters.http_ssl_proxy
 

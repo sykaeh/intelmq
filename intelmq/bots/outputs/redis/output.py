@@ -2,10 +2,23 @@
 
 import redis
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Integer
 
 
 class RedisOutputBot(Bot):
+
+    NAME = 'Redis'
+    DESCRIPTION = """Redis is the bot responsible to send events to a
+    Redis server. """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('redis_db', '', False, Integer, default=2),
+        Param('redis_password', '', True, String),
+        Param('redis_queue', '', True, String),
+        Param('redis_server_ip', '', True, String, default='127.0.0.1'),
+        Param('redis_server_port', '', True, Integer, default=6379),
+        Param('redis_timeout', '', True, Integer, default=50000)
+    ])
 
     def init(self):
         self.host = self.parameters.redis_server_ip

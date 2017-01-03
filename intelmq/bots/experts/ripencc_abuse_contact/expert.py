@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-'''
+"""
 Reference:
 https://stat.ripe.net/docs/data_api
 https://github.com/RIPE-NCC/whois/wiki/WHOIS-REST-API-abuse-contact
@@ -7,13 +7,24 @@ https://github.com/RIPE-NCC/whois/wiki/WHOIS-REST-API-abuse-contact
 TODO: Load RIPE networks prefixes into memory.
 TODO: Compare each IP with networks prefixes loaded.
 TODO: If ip matches, query RIPE
-'''
+"""
 
 from intelmq.bots.experts.ripencc_abuse_contact import lib
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import Boolean
 
 
 class RIPENCCExpertBot(Bot):
+
+    NAME = 'RIPENCC'
+    DESCRIPTION = """RIPENCC is the bot responsible to get the correspondent
+    abuse contact from source IP and destination IP of the events.
+    RIPEstat documentation: https://stat.ripe.net/docs/data_api """
+    PARAMETERS = ParameterDefinitions('redis', [
+        Param('query_ribe_db_asn', '', False, Boolean, default=True),
+        Param('query_ripe_db_ip', '', False, Boolean, default=True),
+        Param('query_ripe_stat', '', False, Boolean, default=True)
+    ])
 
     def init(self):
         self.query_db_asn = getattr(self.parameters, 'query_ripe_db_asn', True)

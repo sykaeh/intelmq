@@ -9,19 +9,10 @@ Tested with sleekxmpp >= 1.0.0-beta5
 
 Copyright (C) 2016 by Bundesamt für Sicherheit in der Informationstechnik
 Software engineering by Intevation GmbH
-
-Parameters:
-ca_certs: string to a CA-bundle file or false/empty string for no checks
-hierarchical_output: boolean (false by default)
-xmpp_user: string
-xmpp_server: string
-xmpp_password: boolean
-xmpp_to_user: string
-xmpp_to_server: string
 """
 
-
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Boolean
 
 try:
     import sleekxmpp
@@ -53,6 +44,21 @@ except ImportError:
 
 
 class XMPPOutputBot(Bot):
+
+    NAME = 'XMPP'
+    DESCRIPTION = """TCP is the bot responsible to send events to a tcp port
+    (Splunk, ElasticSearch, etc..). """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('ca_certs', 'String to a CA-bundle file or false/empty string for no checks', True, String, default='/etc/ssl/certs/ca-certificates.crt'),
+        Param('xmpp_user', 'XMPP username', True, String),
+        Param('xmpp_password', 'XMPP password', True, String),
+        Param('xmpp_server', 'XMPP server', True, String),
+        Param('xmpp_to_server', 'Destination server', True, String),
+        Param('xmpp_to_user', 'Destination username', True, String),
+        Param('hierarchical_output',
+              'Whether to convert events to hierarchical format', True, Boolean, default=False)
+    ])
+
     def init(self):
         if sleekxmpp is None:
             self.logger.error('Could not import sleekxmpp. Please install it.')

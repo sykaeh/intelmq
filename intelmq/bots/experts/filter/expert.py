@@ -6,10 +6,23 @@ from datetime import datetime, timedelta
 import pytz
 from dateutil import parser
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String
 
 
 class FilterExpertBot(Bot):
+
+    NAME = 'Filter'
+    DESCRIPTION = """Filters out events depending on bot parameters
+    specification (filter_key, filter_value, filter_action). """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('filter_action', 'Action when a message match to the criteria (possible actions: keep/drop) ', False, String),
+        Param('filter_key', 'Key from data harmonization', False, String),
+        Param('filter_regex', 'Attribute determines if the filter_value shall be treated as regular expression or not. If this attribute is not empty, the bot uses Python\'s "search" function to evaluate the filter. ', False, String),
+        Param('filter_value', 'Value for the key', False, String),
+        Param('not_before', 'Events before this time will be dropped', False, String),
+        Param('not_after', 'Events after this time will be dropped', False, String)
+    ])
 
     # number of minutes in time units
     timespans = {'hour': 60, 'day': 24 * 60, 'week': 7 * 24 * 60,

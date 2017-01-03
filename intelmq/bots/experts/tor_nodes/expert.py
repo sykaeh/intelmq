@@ -3,10 +3,19 @@
 See README for database download.
 """
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, ParameterDefinitions, Param
+from intelmq.lib.harmonization import String
 
 
 class TorExpertBot(Bot):
+
+    NAME = 'Tor Nodes'
+    DESCRIPTION = """Tor Nodes is the bot responsible to check if an IP is an
+    Tor Exit Node. """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('database', '', True, String,
+              default='/opt/intelmq/var/lib/bots/tor_nodes/tor_nodes.dat')
+    ])
 
     database = set()
 

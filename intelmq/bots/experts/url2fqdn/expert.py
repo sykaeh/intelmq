@@ -1,11 +1,18 @@
 # -*- coding: utf-8 -*-
 from urllib.parse import urlparse
 
-import intelmq.lib.harmonization
-from intelmq.lib.bot import Bot
+from intelmq.lib.harmonization import FQDN, Boolean
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
 
 
 class Url2fqdnExpertBot(Bot):
+
+    NAME = 'url2fqdn'
+    DESCRIPTION = """url2fqdn is the bot responsible to parsing the fqdn from
+    the url.. """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('overwrite', '', False, Boolean, default=False)
+    ])
 
     def init(self):
         self.overwrite = getattr(self.parameters, 'overwrite', False)
@@ -23,7 +30,7 @@ class Url2fqdnExpertBot(Bot):
                 continue
 
             hostname = urlparse(event.get(key_url)).hostname
-            if intelmq.lib.harmonization.FQDN.is_valid(hostname, sanitize=True):
+            if FQDN.is_valid(hostname, sanitize=True):
                 event.add(key_fqdn, hostname, sanitize=True, force=True)
 
         self.send_message(event)

@@ -1,10 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
 
-"""
 import csv
 import datetime
-import importlib
 import io
 import json
 import logging
@@ -21,6 +18,7 @@ from intelmq import (DEFAULT_LOGGING_PATH, DEFAULTS_CONF_FILE,
 from intelmq.lib import exceptions, utils
 import intelmq.lib.message as libmessage
 from intelmq.lib.pipeline import PipelineFactory
+from intelmq.lib.harmonization import *
 
 __all__ = ['Bot', 'CollectorBot', 'ParserBot']
 
@@ -628,3 +626,122 @@ class CollectorBot(Bot):
 
 class Parameters(object):
     pass
+
+
+class Param(object):
+
+    def __init__(self, name, description, required, validation_type,
+                 group='specific', default=None):
+        self.name = name
+        self.description = description
+        self.group = group
+        self.required = required
+        self.validation_type = validation_type
+        self.default = default
+
+    def validate(self, value):
+        return self.validation_type.is_valid(value)
+
+    def __str__(self):
+        return "{} ({}): {}, default: {}, required: {}".format(self.name,
+                                                               self.validation_type,
+                                                               self.description,
+                                                               self.default,
+                                                               self.required)
+
+
+class ParameterDefinitions(object):
+
+    OPTIONAL_PARAMS = {
+        'feed': [
+            Param('feed', 'The name of the feed.', True, String, group='feed'),
+            Param('provider', 'The provider of the feed.', False, String,
+                  group='feed'),
+            Param('accuracy', 'The accuracy of the feed.', True, Float,
+                  group='feed'),
+        ],
+        'collector': [
+            Param('rate_limit', 'The rate limiting for the collector.', True,
+                  Integer)
+        ],
+        'mail': [
+            Param('mail_host', 'Hostname for the mail account.', True, String,
+                  group='mail'),
+            Param('mail_user', 'Username for the mail account.', True, String,
+                  group='mail'),
+            Param('mail_password', 'Password for the mail account.', True,
+                  String, group='mail'),
+            Param('mail_ssl', 'Whether the mail server uses SSL.', True,
+                  Boolean,
+                  group='mail', default=True)
+        ],
+        'http': [
+            Param('http_username', 'Username for Basic Auth.', False, String,
+                  group='http'),
+            Param('http_password', 'Password for Basic Auth.', False, String,
+                  group='http'),
+            Param('http_proxy', 'HTTP proxy.', False, String, group='http'),
+            Param('https_proxy', 'HTTP proxy.', False, String, group='http'),
+            Param('http_user_agent', 'User Agent for the HTTP request.', False,
+                  String, group='http'),
+            Param('http_verify_cert', 'Whether to verify SSL certificates.',
+                  True, Boolean, group='http')
+        ],
+        'redis': [
+            Param('redis_cache_db', '', True, Integer, default=5,
+                  group='redis'),
+            Param('redis_cache_host', '',
+                  False, String, default='127.0.0.1', group='redis'),
+            Param('redis_cache_port', '', True,
+                  Integer, default=6379, group='redis'),
+            Param('redis_cache_password', '', False, String, group='redis'),
+            Param('redis_cache_ttl', '', True, Integer, default=86400,
+                  group='redis')
+        ]
+    }
+
+    DEFAULT_PARAMS = [
+        Param('error_dump_message', 'Whether to dump the message on error.',
+              True, Boolean, group='error'),
+        Param('error_log_exception', '', True, Boolean, group='error'),
+        Param('error_log_message', '', True, Boolean, group='error'),
+        Param('error_max_retries', '', True, Integer, group='error'),
+        Param('error_procedure', '', True, String, group='error'),
+        Param('error_retry_delay', '', True, Integer, group='error'),
+        Param('logging_handler', '', True, String, group='logging'),
+        Param('logging_level', '', True, String, group='logging'),
+        Param('logging_path', '', True, String, group='logging'),
+        Param('logging_syslog', '', True, String, group='logging'),
+        Param('broker', '', True, String, group='pipeline'),
+        Param('load_balance', '', True, Boolean, group='pipeline'),
+        Param('destination_pipeline_db', '', True, Integer, group='pipeline'),
+        Param('destination_pipeline_host', '', True, String, group='pipeline'),
+        Param('destination_pipeline_port', '', True, Integer, group='pipeline'),
+        Param('source_pipeline_db', '', True, Integer, group='pipeline'),
+        Param('source_pipeline_host', '', True, String, group='pipeline'),
+        Param('source_pipeline_port', '', True, Integer, group='pipeline')
+    ]
+
+    def __init__(self, predefined, additional_params):
+        self.default_params = self.DEFAULT_PARAMS.copy()
+        self.params = []
+        additional_groups = predefined.split(' ')
+        for g in additional_groups:
+            if g != '':
+                self.params += self.OPTIONAL_PARAMS[g].copy()
+        self.params += additional_params
+
+    def to_legacy_format(self):
+
+        defaults = utils.load_configuration(DEFAULTS_CONF_FILE)
+        val = {}
+        for p in self.params:
+            val[p.name] = None
+            if hasattr(defaults, p.name):
+                val[p.name] = defaults[p.name]
+            if p.default is not None:
+                val[p.name] = p.default
+        return val
+
+    def __str__(self):
+        return "[ {} ]".format(", ".join([str(p) for p in self.params]))

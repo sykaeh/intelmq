@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String
 
 try:
     import geoip2.database
@@ -9,6 +10,15 @@ except ImportError:
 
 
 class GeoIPExpertBot(Bot):
+
+    NAME = 'MaxMind GeoIP'
+    DESCRIPTION = """MaxMind GeoIP is the bot responsible for adding
+    geolocation information to events (Country, City, Longitude,
+    Latitude, etc..) """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('database', 'Path to the database', True, String,
+              default='/opt/intelmq/var/lib/bots/maxmind_geoip/GeoLite2-City.mmdb')
+    ])
 
     def init(self):
         if geoip2 is None:

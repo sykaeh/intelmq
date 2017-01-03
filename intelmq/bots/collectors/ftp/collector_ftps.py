@@ -20,7 +20,8 @@ import ssl
 import zipfile
 from ftplib import FTP_TLS
 
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Integer
 
 
 # BEGIN content from Stack Overflow
@@ -55,6 +56,18 @@ class FTPS(FTP_TLS):
 
 
 class FTPSCollectorBot(CollectorBot):
+
+    NAME = 'FTPS Collector'
+    DESCRIPTION = ''
+    PARAMETERS = ParameterDefinitions('feed collector', [
+        Param('ftps_host', '', True, String),
+        Param('ftps_port', '', True, Integer),
+        Param('ftps_username', '', False, String),
+        Param('ftps_password', '', False, String),
+        Param('ftps_directory', '', False, String),
+        Param('ftps_file', '', False, String)
+    ])
+
     def process(self):
         self.logger.info("Downloading report from %s." %
                          (self.parameters.ftp_host + ':' +

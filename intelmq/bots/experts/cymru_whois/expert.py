@@ -2,7 +2,7 @@
 import json
 
 from intelmq.bots.experts.cymru_whois.lib import Cymru
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, ParameterDefinitions
 from intelmq.lib.cache import Cache
 from intelmq.lib.harmonization import IPAddress
 
@@ -11,6 +11,11 @@ MINIMUM_BGP_PREFIX_IPV6 = 128
 
 
 class CymruExpertBot(Bot):
+
+    NAME = 'Cymru Whois'
+    DESCRIPTION = """Cymru Whois (IP to ASN) is the bot responsible to add
+    network information to the events (BGP, ASN, AS Name, Country, etc..). """
+    PARAMETERS = ParameterDefinitions('redis', [])
 
     def init(self):
         self.cache = Cache(self.parameters.redis_cache_host,

@@ -11,23 +11,14 @@ Tested with sleekxmpp >= 1.0.0-beta5
 
 Copyright (C) 2016 by Bundesamt für Sicherheit in der Informationstechnik
 Software engineering by Intevation GmbH
-
-Parameters:
-ca_certs: string to a CA-bundle file or false/empty string for no checks
-strip_message: boolean
-xmpp_user: string
-xmpp_server: string
-xmpp_password: boolean
-xmpp_room: string
-xmpp_room_password: string
-xmpp_room_nick: string
 """
 
-
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Boolean
 
 try:
     import sleekxmpp
+
 
     class XMPPClient(sleekxmpp.ClientXMPP):
         def __init__(self,
@@ -73,6 +64,23 @@ except ImportError:
 
 
 class XMPPCollectorBot(CollectorBot):
+    NAME = 'XMPP collector'
+    DESCRIPTION = """This bot can connect to an XMPP Server and one room,
+    in order to receive reports from it. TLS is used by default. rate_limit
+    is ineffective here. Bot can either pass the body or the whole event."""
+    PARAMETERS = ParameterDefinitions('feed collector', [
+        Param('xmpp_server', 'XMPP server', True, String),
+        Param('xmpp_user', 'XMPP username', True, String),
+        Param('xmpp_password', 'XMPP password', True, String),
+        Param('xmpp_room', 'XMPP room', True, String),
+        Param('xmpp_room_nick', 'XMPP room nick', True, String),
+        Param('xmpp_room_password', 'XMPP room password', True, String),
+        Param('ca_certs',
+              'string to a CA-bundle file or false/empty string for no checks',
+              True, String, default='/etc/ssl/certs/ca-certificates.crt'),
+        Param('pass_full_xml', '', True, Boolean, default=False),
+        Param('strip_message', '', True, Boolean, default=True)
+    ])
 
     xmpp = None
 
@@ -123,7 +131,8 @@ class XMPPCollectorBot(CollectorBot):
         else:
             tmp_body = body
 
-        self.logger.debug("Received Stanza: %r from %r." % (tmp_body, msg['from']))
+        self.logger.debug(
+            "Received Stanza: %r from %r." % (tmp_body, msg['from']))
 
         raw_msg = body
 

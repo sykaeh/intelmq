@@ -8,22 +8,25 @@ The bot creates on report per file.
 
 Copyright (C) 2016 by Bundesamt für Sicherheit in der Informationstechnik
 Software engineering by Intevation GmbH
-
-Parameters:
-path: string
-postfix: string
-delete_file: boolean
-    default: False
 """
 
 import fnmatch
 import os
 
 import intelmq.lib.exceptions as exceptions
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Boolean
 
 
 class FileCollectorBot(CollectorBot):
+
+    NAME = 'Fileinput'
+    DESCRIPTION = 'Fileinput collector fetches data from a file.'
+    PARAMETERS = ParameterDefinitions('feed collector', [
+        Param('path', 'Path to the file', True, String),
+        Param('postfix', '', True, String),
+        Param('delete_file', 'Whether to delete the file after reading', False, Boolean, default=False)
+    ])
 
     def init(self):
         # Test if path is a directory

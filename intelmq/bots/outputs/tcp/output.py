@@ -2,10 +2,23 @@
 import socket
 
 import intelmq.lib.utils as utils
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Integer, Boolean
 
 
 class TCPOutputBot(Bot):
+
+    NAME = 'TCP'
+    DESCRIPTION = """TCP is the bot responsible to send events to a tcp port
+    (Splunk, ElasticSearch, etc..). """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('ip', '', True, String),
+        Param('port', '', True, Integer),
+        Param('separator', '', True, String, default='\n'),
+        Param('hierarchical_output',
+              'Whether to convert events to hierarchical format', True, Boolean,
+              default=False)
+    ])
 
     def init(self):
         self.address = (self.parameters.ip, int(self.parameters.port))

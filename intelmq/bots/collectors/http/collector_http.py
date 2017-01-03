@@ -1,26 +1,25 @@
 # -*- coding: utf-8 -*-
 """
 HTTP collector bot
-
-Parameters:
-http_url: string
-http_header: dictionary
-    default: {}
-http_verify_cert: boolean
-    default: True
-http_username, http_password: string
-http_proxy, https_proxy: string
-
 """
+
 import io
 import zipfile
 
 import requests
 
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String
 
 
 class HTTPCollectorBot(CollectorBot):
+
+    NAME = 'Generic URL Fetcher'
+    DESCRIPTION = """Generic URL Fetcher is the bot responsible to get the
+    report from an URL."""
+    PARAMETERS = ParameterDefinitions('http feed collector', [
+        Param('http_url', 'The URL of the feed', True, String)
+    ])
 
     def init(self):
         self.set_request_parameters()

@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import Integer, String, Boolean
 
 try:
     import pika
@@ -9,6 +10,48 @@ except ImportError:
 
 
 class AMQPTopicBot(Bot):
+    NAME = 'AMQP Topic'
+    DESCRIPTION = """AMQP Topic is the bot responsible to send events to a
+    AMQP topic exchange. """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('connection_attempts',
+              'The number of connection attempts to defined server', True,
+              Integer, default=3),
+        Param('connection_heartbeat', 'Heartbeat to server, in seconds', True,
+              Integer, default=3600),
+        Param('connection_host', 'Name/IP for the AMQP server', True, String,
+              default='127.0.0.1'),
+        Param('connection_port', 'Port for the AMQP server', True, Integer,
+              default=5672),
+        Param('connection_vhost',
+              'Virtual host to connect, on a http(s) connection would be http:/IP/<your virtual host>',
+              True, String),
+        Param('content_type',
+              'Content type to deliver to AMQP server, currently only supports "application/json"',
+              True, String, default='application/json'),
+        Param('delivery_mode',
+              '1 - Non-persistent, 2 - Persistent. On persistent mode, messages are delivered to \'durable\' queues and will be saved to disk',
+              True, Integer, default=2),
+        Param('exchange_durable',
+              'If set to True, the exchange will survive broker restart, otherwise will be a transient exchange.',
+              True, Boolean, default=True),
+        Param('exchange_name', 'The name of the exchange to use', True, String),
+        Param('exchange_type',
+              'Type of the exchange, presently only "topic" is supported', True,
+              String, default='topic'),
+        Param('keep_raw_field',
+              'If set to True, the message \'raw\' field will be sent', True,
+              Boolean, default=False),
+        Param('password', 'Password for authentication on your AMQP server',
+              True, String),
+        Param('require_confirmation',
+              'If set to True, an exception will be raised if a confirmation error is received',
+              True, Boolean, default=True),
+        Param('routing_key', 'The routing key for your amqptopic', True,
+              String),
+        Param('username', 'Username for authentication on your AMQP server',
+              True, String),
+    ])
 
     def init(self):
         self.connection = None
@@ -63,7 +106,8 @@ class AMQPTopicBot(Bot):
             self.channel.confirm_delivery()
 
     def process(self):
-        ''' Stop the Bot if cannot connect to AMQP Server after the defined connection attempts '''
+        """ Stop the Bot if cannot connect to AMQP Server after the defined
+        connection attempts. """
 
         # self.connection and self.channel can be None
         if getattr(self.connection, 'is_closed', None) or getattr(self.channel, 'is_closed', None):

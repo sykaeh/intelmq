@@ -4,7 +4,7 @@
 
 *Bot parameters:* 
 * field_delimiter   : If the format is 'delimited' this will be added between fields.
-* format            : Can be 'Json' or 'delimited'. The Json format outputs the event 'as-is'. Delimited will descontruct the event and print each field:value separated by the field delimit. See examples bellow.
+* format            : Can be 'Json' or 'delimited'. The Json format outputs the event 'as-is'. Delimited will descontruct the event and print each field:value separated by the field delimit. See examples below.
 * header            : Header text to be sent in the udp datagram. 
 * ip                : IP address of the UDP server
 * port              : PORT to connect to.

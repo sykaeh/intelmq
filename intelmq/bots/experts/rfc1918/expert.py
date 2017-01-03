@@ -22,7 +22,8 @@ https://en.wikipedia.org/wiki/IPv4
 import ipaddress
 from urllib.parse import urlparse
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String
 
 NETWORKS = ("10.0.0.0/8", "100.64.0.0/10", "127.0.0.0/8",
             "169.254.0.0/16", "172.16.0.0/12", "192.0.0.0/24", "192.0.2.0/24",
@@ -34,6 +35,16 @@ DOMAINS = ('.test', '.example', '.invalid', '.localhost', 'example.com',
 
 
 class RFC1918ExpertBot(Bot):
+
+    NAME = 'RFC 1918'
+    DESCRIPTION = """RFC 1918 removes fields or discards events if an ip or
+    domain is invalid (invalid, local, reserved, documentation). IP,
+    FQDN and URL field names are supported."""
+    PARAMETERS = ParameterDefinitions('', [
+        Param('fields', '', True,
+              String, default='destination.ip,source.ip,source.url'),
+        Param('policy', '', True, String, default='del,drop,drop')
+    ])
 
     def init(self):
         self.fields = self.parameters.fields.lower().strip().split(",")
@@ -58,7 +69,7 @@ class RFC1918ExpertBot(Bot):
                             for domain in DOMAINS)
             if check:
                 if policy == 'del':
-                    self.logger.debug("Value removed from %s." % (field))
+                    self.logger.debug("Value removed from %s." % field)
                     del event[field]
                 elif policy == 'drop':
                     self.acknowledge_message()

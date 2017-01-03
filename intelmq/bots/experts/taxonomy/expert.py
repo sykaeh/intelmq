@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, ParameterDefinitions
 
 # FIXME: this dict should be on a sparated file
 
@@ -31,6 +31,11 @@ TAXONOMY = {
 
 
 class TaxonomyExpertBot(Bot):
+
+    NAME = 'Taxonomy'
+    DESCRIPTION = """Taxonomy is the bot responsible to apply the eCSIRT
+    Taxonomy to all events. """
+    PARAMETERS = ParameterDefinitions('', [])
 
     def process(self):
         event = self.receive_message()

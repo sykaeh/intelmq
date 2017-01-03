@@ -2,7 +2,8 @@
 import json
 import logging
 
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String
 
 try:
     from sdk.blueliv_api import BluelivAPI
@@ -11,6 +12,14 @@ except ImportError:
 
 
 class BluelivCrimeserverCollectorBot(CollectorBot):
+
+    NAME = 'Blueliv Crimeserver'
+    DESCRIPTION = """Blueliv Crimeserver Collector is the bot responsible to
+    get the report through the API."""
+    PARAMETERS = ParameterDefinitions('http feed collector', [
+        Param('api_key', 'Your API key', True, String)
+    ])
+
     def init(self):
         if BluelivAPI is None:
             self.logger.error('Could not import sdk.blueliv_api.BluelivAPI. Please install it.')

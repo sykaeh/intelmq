@@ -1,12 +1,21 @@
 # -*- coding: utf-8 -*-
 import json
 
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String
 
 from .OTXv2 import OTXv2
 
 
 class AlienVaultOTXCollectorBot(CollectorBot):
+
+    NAME = 'AlienVault OTX'
+    DESCRIPTION = """AlienVault OTX Collector is the bot responsible to get
+    the report through the API. Report could vary according to subscriptions."""
+    PARAMETERS = ParameterDefinitions('feed collector', [
+        Param('api_key', 'Your API key', True, String),
+        Param('https_proxy', 'HTTPS proxy', True, String)
+    ])
 
     def init(self):
         if hasattr(self.parameters, 'http_ssl_proxy'):

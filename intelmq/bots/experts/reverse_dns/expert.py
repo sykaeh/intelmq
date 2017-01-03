@@ -5,9 +5,9 @@ from datetime import datetime
 import dns
 from dns import resolver, reversename
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, ParameterDefinitions, Param
 from intelmq.lib.cache import Cache
-from intelmq.lib.harmonization import IPAddress
+from intelmq.lib.harmonization import IPAddress, Integer
 
 MINIMUM_BGP_PREFIX_IPV4 = 24
 MINIMUM_BGP_PREFIX_IPV6 = 128
@@ -15,6 +15,13 @@ DNS_EXCEPTION_VALUE = "__dns-exception"
 
 
 class ReverseDnsExpertBot(Bot):
+
+    NAME = 'Reverse DNS'
+    DESCRIPTION = """Reverse DNS is the bot resposible to get the correspondent
+    domain name source IP and destination IP of the events"""
+    PARAMETERS = ParameterDefinitions('redis', [
+        Param('cache_ttl_invalid_response', '', False, Integer, default=60)
+    ])
 
     def init(self):
         self.cache = Cache(self.parameters.redis_cache_host,

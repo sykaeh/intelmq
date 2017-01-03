@@ -4,7 +4,8 @@ Modify Expert bot let's you manipulate all fields with a config file.
 """
 import re
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String
 from intelmq.lib.utils import load_configuration
 
 
@@ -23,6 +24,15 @@ class MatchGroupMapping:
 
 
 class ModifyExpertBot(Bot):
+
+    NAME = 'Modify'
+    DESCRIPTION = """Modify bot can make nearly arbitrary changes to event's
+    fields based on regex-rules on different values. See docs/Bots.md for
+    some examples."""
+    PARAMETERS = ParameterDefinitions('', [
+        Param('configuration_path', 'Path to the configuration file', True,
+              String, default='/opt/intelmq/var/lib/bots/modify/modify.conf')
+    ])
 
     def init(self):
         self.config = load_configuration(self.parameters.configuration_path)

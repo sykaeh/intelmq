@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-"""
-"""
-from intelmq.lib.bot import Bot
+
+from intelmq.lib.bot import Bot, ParameterDefinitions, Param
+from intelmq.lib.harmonization import String
 
 try:
     import pyasn
@@ -10,6 +10,14 @@ except ImportError:
 
 
 class ASNLookupExpertBot(Bot):
+
+    NAME = 'ASN Lookup'
+    DESCRIPTION = """ASN Lookup is the bot responsible to add ASN and BGP
+    information from Route Views Project to the events. """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('database', '', True, String,
+              default='/opt/intelmq/var/lib/bots/asn_lookup/ipasn.dat')
+    ])
 
     def init(self):
         if pyasn is None:

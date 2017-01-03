@@ -1,10 +1,20 @@
 # -*- coding: utf-8 -*-
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
 from intelmq.lib.cache import Cache
+from intelmq.lib.harmonization import String, Integer
 
 
 class DeduplicatorExpertBot(Bot):
+
+    NAME = 'Deduplicator'
+    DESCRIPTION = """Deduplicator is the bot responsible for detection and
+    removal of duplicate messages. Messages get cached for <redis_cache_ttl>
+    seconds. If found in the cache, it is assumed to be a duplicate. """
+    PARAMETERS = ParameterDefinitions('redis', [
+        Param('redis_cache_db', '', True, Integer, default=6, group='redis'),
+        Param('ignore_keys', '', True, String, default='raw,time.observation')
+    ])
 
     def init(self):
         self.cache = Cache(self.parameters.redis_cache_host,

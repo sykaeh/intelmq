@@ -17,12 +17,23 @@ Options:
 
 import requests
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, ParameterDefinitions, Param
+from intelmq.lib.harmonization import Boolean
 
 URL = 'https://contacts.cert.at/cgi-bin/abuse-nationalcert.pl'
 
 
 class CERTatContactExpertBot(Bot):
+
+    NAME = 'CERT.at Contact Database'
+    DESCRIPTION = """Cert.at Contact Database is the bot responsible to get
+    CERT. Set filter to true if you want to filter out events for cert.at.
+    Set add_cc to true if you want to overwrite an existing CC value. """
+    PARAMETERS = ParameterDefinitions('', [
+        Param('filter', 'Act as a a filter for AT', True, Boolean, default=False),
+        Param('http_verify_cert', '', True, Boolean, default=True),
+        Param('overwrite_cc', 'Set to true if you want to overwrite any potentially existing cc fields in the event', True, Boolean, default=False)
+    ])
 
     def process(self):
         event = self.receive_message()

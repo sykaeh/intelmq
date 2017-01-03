@@ -1,19 +1,13 @@
 # -*- coding: utf-8 -*-
 """
 A collector for grabbing appropriately tagged events from MISP.
-
-Parameters:
-  - misp_url: URL of the MISP server
-  - misp_key: API key for accessing MISP
-  - misp_verify: true or false, check the validity of the certificate
-  - misp_tag_to_process: MISP tag identifying events to be processed
-  - misp_tag_processed: MISP tag identifying events that have been processed
-
 """
+
 import json
 from urllib.parse import urljoin
 
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Boolean
 
 try:
     from pymisp import PyMISP
@@ -22,6 +16,16 @@ except ImportError:
 
 
 class MISPCollectorBot(CollectorBot):
+
+    NAME = 'MISP Generic'
+    DESCRIPTION = 'Collect events from a MISP server.'
+    PARAMETERS = ParameterDefinitions('feed collector', [
+        Param('misp_url', 'URL of the MISP server (with trailing \'/\')', True, String),
+        Param('misp_key', 'API key for accessing MISP', True, String),
+        Param('misp_verify', 'Check the validity of the certificate', True, Boolean, default=True),
+        Param('misp_tag_to_process', 'MISP tag identifying events to be processed', True, String),
+        Param('misp_tag_processed', 'MISP tag identifying events that have been processed', True, String)
+    ])
 
     def init(self):
         if PyMISP is None:

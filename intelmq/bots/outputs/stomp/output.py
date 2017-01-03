@@ -4,7 +4,8 @@ TODO: Test this with a real stomp server
 """
 import os.path
 
-from intelmq.lib.bot import Bot
+from intelmq.lib.bot import Bot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Integer, Boolean
 from intelmq.lib.message import MessageFactory
 
 try:
@@ -15,6 +16,22 @@ except ImportError:
 
 class StompOutputBot(Bot):
     """ main class for the STOMP protocol output bot """
+
+    NAME = 'Stomp'
+    DESCRIPTION = ''
+    PARAMETERS = ParameterDefinitions('', [
+        Param('server', 'server', False, String, default='127.0.0.1'),
+        Param('port', '', False, Integer, default=61614),
+        Param('exchange', '', False, String, default='/exchange/_push'),
+        Param('heartbeat', '', False, Integer, default=60000),
+        Param("ssl_ca_certificate", "Path to CA file", False,
+              String),
+        Param("ssl_client_certificate",
+              "Path to client cert file", False, String),
+        Param("ssl_client_certificate_key",
+              "Path to client cert key file", False, String),
+        Param('http_verify_cert', '', False, Boolean, default=True)
+    ])
 
     def init(self):
         if stomp is None:

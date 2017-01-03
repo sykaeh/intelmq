@@ -17,10 +17,23 @@ import io
 import zipfile
 from ftplib import FTP
 
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Integer
 
 
 class FTPCollectorBot(CollectorBot):
+
+    NAME = 'FTP Collector'
+    DESCRIPTION = ''
+    PARAMETERS = ParameterDefinitions('feed collector', [
+        Param('ftp_host', '', True, String),
+        Param('ftp_port', '', True, Integer),
+        Param('ftp_username', '', False, String),
+        Param('ftp_password', '', False, String),
+        Param('ftp_directory', '', False, String),
+        Param('ftp_file', '', False, String)
+    ])
+
     def process(self):
         self.logger.info("Downloading report from %s." %
                          (self.parameters.ftp_host + ':' +

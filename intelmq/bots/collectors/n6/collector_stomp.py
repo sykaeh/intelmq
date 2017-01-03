@@ -1,26 +1,31 @@
 # -*- coding: utf-8 -*-
 import os.path
 
-from intelmq.lib.bot import CollectorBot
+from intelmq.lib.bot import CollectorBot, Param, ParameterDefinitions
+from intelmq.lib.harmonization import String, Integer
 
 try:
     import stomp
+
 
     class StompListener(stomp.listener.PrintingListener):
         """ the stomp listener gets called asynchronously for
             every STOMP message
         """
+
         def __init__(self, n6stompcollector):
             self.n6stomper = n6stompcollector
 
         def on_heartbeat_timeout(self):
-            self.n6stomper.logger.warn("Heartbeat timeout. Attempting to re-connect.")
+            self.n6stomper.logger.warn(
+                "Heartbeat timeout. Attempting to re-connect.")
             self.n6stomper.conn.disconnect()
             status = self.n6stomper.conn.connect(wait=False)
             self.n6stomper.logger.info("Re-connected: {}.".format(status))
 
         def on_error(self, headers, message):
-            self.n6stomper.logger.error('Received an error :"%s".' % repr(message))
+            self.n6stomper.logger.error(
+                'Received an error :"%s".' % repr(message))
 
         def on_message(self, headers, message):
             self.n6stomper.logger.debug('Receive message '
@@ -38,6 +43,25 @@ except ImportError:
 
 class n6stompCollectorBot(CollectorBot):
     """ main class for the n6 STOMP protocol collector """
+
+    NAME = 'N6stomp'
+    DESCRIPTION = """N6 Collector - CERT.pl's N6 Collector - N6 feed via STOMP
+    interface. Note that rate_limit does not apply for this bot as it is
+    waiting for messages on a stream."""
+    PARAMETERS = ParameterDefinitions('feed collector', [
+        Param('exchange', 'Your exchange point as given by CERT.pl', True,
+              String),
+        Param('server', 'CERT.pl\'s server', True, String,
+              default='n6stream.cert.pl'),
+        Param('port', '', True, Integer, default=61614),
+        Param('heartbeat', '', False, Integer, default=60000),
+        Param("ssl_ca_certificate", "Path to CA file for CERT.pl's n6", True,
+              String),
+        Param("ssl_client_certificate",
+              "Path to client cert file for CERT.pl's n6", True, String),
+        Param("ssl_client_certificate_key",
+              "Path to client cert key file for CERT.pl's n6", True, String)
+    ])
 
     def init(self):
         if stomp is None:
